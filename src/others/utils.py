@@ -76,7 +76,7 @@ def test_rouge(temp_dir, cand, ref):
             with open(tmp_dir + "/reference/ref.{}.txt".format(i), "w",
                       encoding="utf-8") as f:
                 f.write(references[i])
-        r = pyrouge.Rouge155(temp_dir=temp_dir)
+        r = pyrouge.Rouge155(temp_dir=temp_dir, rouge_dir="../../pyrouge/tools/ROUGE-1.5.5/")
         r.model_dir = tmp_dir + "/reference/"
         r.system_dir = tmp_dir + "/candidate/"
         r.model_filename_pattern = 'ref.#ID#.txt'
@@ -113,6 +113,7 @@ def tile(x, count, dim=0):
     return x
 
 def rouge_results_to_str(results_dict):
+    return str(results_dict)
     return ">> ROUGE-F(1/2/3/l): {:.2f}/{:.2f}/{:.2f}\nROUGE-R(1/2/3/l): {:.2f}/{:.2f}/{:.2f}\n".format(
         results_dict["rouge_1_f_score"] * 100,
         results_dict["rouge_2_f_score"] * 100,
@@ -125,3 +126,4 @@ def rouge_results_to_str(results_dict):
 
         # ,results_dict["rouge_su*_f_score"] * 100
     )
+

@@ -2,7 +2,7 @@ import copy
 
 import torch
 import torch.nn as nn
-from pytorch_transformers import BertModel, BertConfig
+from transformers import BertModel, BertConfig
 from torch.nn.init import xavier_uniform_
 
 from models.decoder import TransformerDecoder
@@ -118,17 +118,16 @@ class Bert(nn.Module):
         if(large):
             self.model = BertModel.from_pretrained('bert-large-uncased', cache_dir=temp_dir)
         else:
-            self.model = BertModel.from_pretrained('bert-base-uncased', cache_dir=temp_dir)
-
+            self.model = BertModel.from_pretrained('EMBEDDIA/finest-bert', cache_dir=temp_dir)
         self.finetune = finetune
 
     def forward(self, x, segs, mask):
         if(self.finetune):
-            top_vec, _ = self.model(x, segs, attention_mask=mask)
+            top_vec, _ = self.model(x, mask, segs, return_dict=False)
         else:
             self.eval()
             with torch.no_grad():
-                top_vec, _ = self.model(x, segs, attention_mask=mask)
+                top_vec, _ = self.model(x, mask, segs, return_dict=False)
         return top_vec
 
 
@@ -199,7 +198,8 @@ class AbsSummarizer(nn.Module):
             my_pos_embeddings.weight.data[:512] = self.bert.model.embeddings.position_embeddings.weight.data
             my_pos_embeddings.weight.data[512:] = self.bert.model.embeddings.position_embeddings.weight.data[-1][None,:].repeat(args.max_pos-512,1)
             self.bert.model.embeddings.position_embeddings = my_pos_embeddings
-        self.vocab_size = self.bert.model.config.vocab_size
+        self.vocab_size = self.bert.model.config.vocab_size + 3
+        self.bert.model.resize_token_embeddings(self.vocab_size)
         tgt_embeddings = nn.Embedding(self.vocab_size, self.bert.model.config.hidden_size, padding_idx=0)
         if (self.args.share_emb):
             tgt_embeddings.weight = copy.deepcopy(self.bert.model.embeddings.word_embeddings.weight)

@@ -220,7 +220,7 @@ class Trainer(object):
             mask_tgt = batch.mask_tgt
             mask_cls = batch.mask_cls
 
-            outputs, scores = self.model(src, tgt,segs, clss, mask_src, mask_tgt, mask_cls)
+            outputs, scores = self.model(src, tgt, segs, clss, mask_src, mask_tgt, mask_cls)
             batch_stats = self.loss.sharded_compute_loss(batch, outputs, self.args.generator_shard_size, normalization)
 
             batch_stats.n_docs = int(src.size(0))
@@ -317,6 +317,7 @@ class Trainer(object):
                             save_pred.write(pred[i].strip()+'\n')
         if(step!=-1 and self.args.report_rouge):
             rouges = test_rouge(self.args.temp_dir, can_path, gold_path)
+            print(rouges)
             logger.info('Rouges at step %d \n%s' % (step, rouge_results_to_str(rouges)))
         self._report_step(0, step, valid_stats=stats)
 

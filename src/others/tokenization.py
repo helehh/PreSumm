@@ -34,6 +34,8 @@ PRETRAINED_VOCAB_ARCHIVE_MAP = {
     'bert-base-multilingual-uncased': "https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-multilingual-uncased-vocab.txt",
     'bert-base-multilingual-cased': "https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-multilingual-cased-vocab.txt",
     'bert-base-chinese': "https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-chinese-vocab.txt",
+    'finest-bert': "https://s3.amazonaws.com/models.huggingface.co/bert/EMBEDDIA/finest-bert/vocab.txt",
+    'tartuNLP/EstBERT': "https://huggingface.co/tartuNLP/EstBERT/resolve/main/vocab.txt"
 }
 PRETRAINED_VOCAB_POSITIONAL_EMBEDDINGS_SIZE_MAP = {
     'bert-base-uncased': 512,
@@ -43,6 +45,8 @@ PRETRAINED_VOCAB_POSITIONAL_EMBEDDINGS_SIZE_MAP = {
     'bert-base-multilingual-uncased': 512,
     'bert-base-multilingual-cased': 512,
     'bert-base-chinese': 512,
+    'finest-bert': 512,
+    'tartuNLP/EstBERT': 512,
 }
 VOCAB_NAME = 'vocab.txt'
 
@@ -59,6 +63,10 @@ def load_vocab(vocab_file):
             token = token.strip()
             vocab[token] = index
             index += 1
+    
+    for word in ["[unused0]", "[unused1]", "[unused2]"]:
+        vocab[word] = index
+        index += 1
     return vocab
 
 
@@ -75,7 +83,7 @@ class BertTokenizer(object):
     """Runs end-to-end tokenization: punctuation splitting + wordpiece"""
 
     def __init__(self, vocab_file, do_lower_case=True, max_len=None,
-                 never_split=("[UNK]", "[SEP]", "[PAD]", "[CLS]", "[MASK]", "[unused0]", "[unused1]", "[unused2]", "[unused3]", "[unused4]", "[unused5]", "[unused6]")):
+                 never_split=("[UNK]", "[SEP]", "[PAD]", "[CLS]", "[EOS]", "[MASK]", "[unused0]", "[unused1]", "[unused2]", "[unused3]", "[unused4]", "[unused5]", "[unused6]")):
 
         if not os.path.isfile(vocab_file):
             raise ValueError(

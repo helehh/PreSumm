@@ -298,8 +298,21 @@ class Translator(object):
                 if(cur_len>3):
                     for i in range(alive_seq.size(0)):
                         fail = False
-                        words = [int(w) for w in alive_seq[i]]
-                        words = [self.vocab.ids_to_tokens[w] for w in words]
+                        words_o = [int(w) for w in alive_seq[i]]
+                        words = []
+                        for w in words_o:
+                            try:
+                                words.append(self.vocab.ids_to_tokens[w])
+                            except KeyError as e:
+                                if(w == 74986):
+                                    words.append("[unused0]")
+                                elif(w == 74987):
+                                    words.append("[unused1]")
+                                elif(w == 74988):
+                                    words.append("[unused2]")
+                                else:
+                                    raise e
+                        
                         words = ' '.join(words).replace(' ##','').split()
                         if(len(words)<=3):
                             continue
@@ -330,7 +343,6 @@ class Translator(object):
             alive_seq = torch.cat(
                 [alive_seq.index_select(0, select_indices),
                  topk_ids.view(-1, 1)], -1)
-
             is_finished = topk_ids.eq(self.end_token)
             if step + 1 == max_length:
                 is_finished.fill_(1)

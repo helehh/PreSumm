@@ -207,7 +207,7 @@ def hashhex(s):
 class BertData():
     def __init__(self, args):
         self.args = args
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+        self.tokenizer = BertTokenizer.from_pretrained('finest-bert', do_lower_case=True)
 
         self.sep_token = '[SEP]'
         self.cls_token = '[CLS]'
@@ -218,6 +218,7 @@ class BertData():
         self.sep_vid = self.tokenizer.vocab[self.sep_token]
         self.cls_vid = self.tokenizer.vocab[self.cls_token]
         self.pad_vid = self.tokenizer.vocab[self.pad_token]
+
 
     def preprocess(self, src, tgt, sent_labels, use_bert_basic_tokenizer=False, is_test=False):
 
@@ -263,7 +264,6 @@ class BertData():
         tgt_subtoken = tgt_subtokens_str.split()[:self.args.max_tgt_ntokens]
         if ((not is_test) and len(tgt_subtoken) < self.args.min_tgt_ntokens):
             return None
-
         tgt_subtoken_idxs = self.tokenizer.convert_tokens_to_ids(tgt_subtoken)
 
         tgt_txt = '<q>'.join([' '.join(tt) for tt in tgt])
@@ -306,7 +306,7 @@ def _format_to_bert(params):
     for d in jobs:
         source, tgt = d['src'], d['tgt']
 
-        sent_labels = greedy_selection(source[:args.max_src_nsents], tgt, 3)
+        sent_labels = greedy_selection(source[:args.max_src_nsents], tgt, 1)
         if (args.lower):
             source = [' '.join(s).lower().split() for s in source]
             tgt = [' '.join(s).lower().split() for s in tgt]

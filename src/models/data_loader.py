@@ -81,7 +81,7 @@ def load_dataset(args, corpus_type, shuffle):
         return dataset
 
     # Sort the glob output by file name (by increasing indexes).
-    pts = sorted(glob.glob(args.bert_data_path + '.' + corpus_type + '.[0-9]*.pt'))
+    pts = sorted(glob.glob(args.bert_data_path + corpus_type + '.[0-9]*.bert.pt'))
     if pts:
         if (shuffle):
             random.shuffle(pts)
@@ -185,14 +185,9 @@ class DataIterator(object):
         xs = self.dataset
         return xs
 
-
-
-
-
-
     def preprocess(self, ex, is_test):
         src = ex['src']
-        tgt = ex['tgt'][:self.args.max_tgt_len][:-1]+[2]
+        tgt = ex['tgt'][:self.args.max_tgt_len][:-1]+[74987]
         src_sent_labels = ex['src_sent_labels']
         segs = ex['segs']
         if(not self.args.use_interval):
@@ -302,7 +297,7 @@ class TextDataloader(object):
 
     def preprocess(self, ex, is_test):
         src = ex['src']
-        tgt = ex['tgt'][:self.args.max_tgt_len][:-1] + [2]
+        tgt = ex['tgt'][:self.args.max_tgt_len][:-1] + [74987]
         src_sent_labels = ex['src_sent_labels']
         segs = ex['segs']
         if (not self.args.use_interval):
